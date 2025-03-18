@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBTextArea
 import com.intellij.util.ui.JBUI
@@ -32,12 +33,12 @@ class RenameCommit : AnAction() {
             startingIndex = previousText.indexOf('\n', startingIndex + 1)
             previousText = previousText.substring(startingIndex, previousText.indexOf('\n', startingIndex + 1)).trim()
         }.join()
-        RenameCommitDialog(previousText, project).show()
+        RenameCommitDialog(previousText, project, root).show()
     }
 
 }
 
-class RenameCommitDialog(val previousCommitText: String, project: Project) : DialogWrapper(true) {
+class RenameCommitDialog(val previousCommitText: String, val project: Project, val root: VirtualFile) : DialogWrapper(true) {
     lateinit var textArea:JBTextArea
     init {
         title = "Rename last commit"
@@ -57,7 +58,12 @@ class RenameCommitDialog(val previousCommitText: String, project: Project) : Dia
     }
 
     override fun doOKAction() {
-        println(textArea.text)
+        val handler = GitLineHandler(project, root, GitCommand.COMMIT)
+        handler.addParameters("--amend", "-m " + textArea.text + "")
+        thread {
+            Git.getInstance().runCommand(handler).getOutputOrThrow()
+        }
+
         super.doOKAction()
     }
 
