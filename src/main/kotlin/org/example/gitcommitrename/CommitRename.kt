@@ -31,7 +31,9 @@ class RenameCommit : AnAction() {
             previousText = Git.getInstance().runCommand(handler).getOutputOrThrow()
             var startingIndex = previousText.indexOf('\n', previousText.indexOf("Date:"))
             startingIndex = previousText.indexOf('\n', startingIndex + 1)
-            previousText = previousText.substring(startingIndex, previousText.indexOf('\n', startingIndex + 1)).trim()
+            var endingIndex = previousText.indexOf('\n', startingIndex + 1)
+            if (endingIndex == -1) endingIndex = previousText.length - 1
+            previousText = previousText.substring(startingIndex, endingIndex).trim()
         }.join()
         RenameCommitDialog(previousText, project, root).show()
     }
