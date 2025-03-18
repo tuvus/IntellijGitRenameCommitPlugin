@@ -38,12 +38,15 @@ class RenameCommit : AnAction() {
 
 }
 
-class RenameCommitDialog(val previousCommitText: String, val project: Project, val root: VirtualFile) : DialogWrapper(true) {
-    lateinit var textArea:JBTextArea
+class RenameCommitDialog(val previousCommitText: String, val project: Project, val root: VirtualFile) :
+    DialogWrapper(true) {
+    lateinit var textArea: JBTextArea
+
     init {
         title = "Rename last commit"
         init()
     }
+
     override fun createCenterPanel(): JComponent {
         val layout = BorderLayout()
         layout.vgap = 10
@@ -58,10 +61,15 @@ class RenameCommitDialog(val previousCommitText: String, val project: Project, v
     }
 
     override fun doOKAction() {
-        val handler = GitLineHandler(project, root, GitCommand.COMMIT)
-        handler.addParameters("--amend", "-m " + textArea.text + "")
         thread {
-            Git.getInstance().runCommand(handler).getOutputOrThrow()
+            val stashHandler = GitLineHandler(project, root, GitCommand.STASH)
+            Git.getInstance().runCommand(stashHandler).getOutputOrThrow()
+            val amendHandler = GitLineHandler(project, root, GitCommand.COMMIT)
+            amendHandler.addParameters("--amend", "-m " + textArea.text)
+            Git.getInstance().runCommand(amendHandler).getOutputOrThrow()
+            val applystashHandler = GitLineHandler(project, root, GitCommand.STASH)
+            applystashHandler.addParameters("apply")
+            Git.getInstance().runCommand(applystashHandler).getOutputOrThrow()
         }
 
         super.doOKAction()
