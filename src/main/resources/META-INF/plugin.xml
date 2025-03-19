@@ -32,7 +32,9 @@
     <actions>
         <action id="org.example.gitcommitrename.RenameCommit" class="org.example.gitcommitrename.RenameCommit"
         text="Rename Commit" description="Rename the last git commit">
+            <!-- Display a button in the Git menu -->
             <add-to-group group-id="VcsGroups"/>
+            <!-- Display a button in the Git context menu -->
             <add-to-group group-id="Git.ContextMenu"/>
         </action>
     </actions>
