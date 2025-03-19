@@ -32,7 +32,8 @@
     <actions>
         <action id="org.example.gitcommitrename.RenameCommit" class="org.example.gitcommitrename.RenameCommit"
         text="Rename Commit" description="Rename the last git commit">
-            <add-to-group group-id="VcsGroups" anchor="first"/>
+            <add-to-group group-id="VcsGroups"/>
+            <add-to-group group-id="Git.ContextMenu"/>
         </action>
     </actions>
 </idea-plugin>

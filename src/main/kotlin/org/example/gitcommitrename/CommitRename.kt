@@ -59,7 +59,7 @@ class RenameCommitDialog(val previousCommitText: String, val project: Project, v
         val layout = BorderLayout()
         layout.vgap = 10
         val renameDialog = JPanel(layout)
-        renameDialog.preferredSize = Dimension(400, 200)
+        renameDialog.preferredSize = Dimension(400, 100)
         renameDialog.add(JLabel("Rename commit:"), BorderLayout.PAGE_START)
 
         textArea = JBTextArea(previousCommitText)
