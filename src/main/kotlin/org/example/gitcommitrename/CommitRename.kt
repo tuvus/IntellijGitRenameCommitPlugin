@@ -22,20 +22,26 @@ import kotlin.concurrent.thread
 class RenameCommit : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project
-            ?: throw Exception("Trying to change the name of a commit without an oppen project!")
+            ?: throw Exception("Trying to change the name of a commit without an open project!")
         val root = GitRepositoryManager.getInstance(project).repositories.firstOrNull()?.root
             ?: throw Exception("Trying to change the name of a commit without the repository!")
         val handler = GitLineHandler(project, root, GitCommand.LOG)
         var previousText = "Failed to load"
+        var commitExists = true
         thread {
-            previousText = Git.getInstance().runCommand(handler).getOutputOrThrow()
+            val output = Git.getInstance().runCommand(handler)
+            if (output.errorOutput.isNotEmpty()) {
+                commitExists = false
+                return@thread
+            }
+            previousText = output.getOutputOrThrow()
             var startingIndex = previousText.indexOf('\n', previousText.indexOf("Date:"))
             startingIndex = previousText.indexOf('\n', startingIndex + 1)
             var endingIndex = previousText.indexOf('\n', startingIndex + 1)
             if (endingIndex == -1) endingIndex = previousText.length - 1
             previousText = previousText.substring(startingIndex, endingIndex).trim()
         }.join()
-        RenameCommitDialog(previousText, project, root).show()
+        if (commitExists) RenameCommitDialog(previousText, project, root).show()
     }
 
 }
