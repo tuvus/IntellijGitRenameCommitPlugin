@@ -116,9 +116,9 @@ class RenameCommitDialog(val previousCommitText: String, val project: Project, v
 
             // Finally un-stash the changes again so that we are where we left off
             Git.getInstance().runCommand(amendHandler).getOutputOrThrow()
-            val applystashHandler = GitLineHandler(project, root, GitCommand.STASH)
-            applystashHandler.addParameters("apply")
-            Git.getInstance().runCommand(applystashHandler).getOutputOrThrow()
+            val applyStashHandler = GitLineHandler(project, root, GitCommand.STASH)
+            applyStashHandler.addParameters("apply")
+            Git.getInstance().runCommand(applyStashHandler).getOutputOrThrow()
         }
 
         super.doOKAction()
